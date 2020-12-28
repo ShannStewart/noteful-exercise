@@ -1,6 +1,6 @@
 const path = require('path')
 const express = require('express')
-const xss = require('xss')
+//const xss = require('xss')
 const folderServices = require('./folders-service');
 
 const foldersRouter = express.Router();
@@ -11,20 +11,26 @@ foldersRouter
     .get(jsonParser, (req, res, next) => {
         const knexInstance = req.app.get('db')
         folderServices.getAllFolders(knexInstance)
-        .then(res.json(folderServices))
+        .then( folders => {
+            res.json(folders)
+        })
         .catch(next)
     })
-    .post((req, res, next) => {
-        const { name } = req.body
-        const newFolder = {name}
+    .post(jsonParser, (req, res, next) => {
+        const name = req.body.name
+        const newFolder = {};
 
-        for (const [key, value] of Object.entries(newFolder)) {
-            if (value = null) {
+        console.log('name: ' + newFolder); 
+
+            if (name == null) {
                 return res.status(400).json({
-                    error: { message: `Missing '${key}' in request body` }
+                    error: { message: `Missing 'name' in request body` }
                   })
             }
-        }
+
+        newFolder.name = name;
+
+        //console.log('test:')
 
         folderServices.insertFolders(
             req.app.get('db'),

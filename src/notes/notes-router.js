@@ -23,12 +23,13 @@ notesRouter
         })
         .catch(next)
     })
-    .post((req, res, next) => {
+    .post(jsonParser, (req, res, next) => {
         const { name, content, folder } = req.body
-        const newNote = {name}
+        const newNote = { }
+        newNote.name = name;
 
         for (const [key, value] of Object.entries(newNote)) {
-            if (value = null) {
+            if (value == null) {
                 return res.status(400).json({
                     error: { message: `Missing '${key}' in request body` }
                   })
